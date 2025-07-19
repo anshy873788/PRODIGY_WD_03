@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tic‑Tac‑Toe</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: radial-gradient(circle at top left, #ff9a9e, #fad0c4);
+      font-family: sans-serif;
+    }
+    #game {
+      display: grid;
+      grid-template: repeat(3, 100px) / repeat(3, 100px);
+      gap: 5px;
+      background: rgba(255, 255, 255, 0.3);
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .cell {
+      background: rgba(255, 255, 255, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2.5rem;
+      cursor: pointer;
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      transition: background 0.2s;
+    }
+    .cell:hover {
+      background: rgba(255, 255, 255, 0.9);
+    }
+    #status {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 1.2rem;
+      color: #333;
+    }
+    button {
+      margin-top: 10px;
+      padding: 6px 12px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <div id="game"></div>
+    <div id="status">Player X's turn</div>
+    <button id="reset">Restart Game</button>
+  </div>
+
+  <script>
+    const gameEl = document.getElementById('game');
+    const statusEl = document.getElementById('status');
+    const resetBtn = document.getElementById('reset');
+    let board = Array(9).fill('');
+    let current = 'X';
+    let gameOver = false;
+
+    const wins = [
+      [0,1,2],[3,4,5],[6,7,8],
+      [0,3,6],[1,4,7],[2,5,8],
+      [0,4,8],[2,4,6]
+    ];
+
+    function drawBoard() {
+      gameEl.innerHTML = '';
+      board.forEach((v, i) => {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.textContent = v;
+        cell.addEventListener('click', () => play(i));
+        gameEl.appendChild(cell);
+      });
+    }
+
+    function play(i) {
+      if (gameOver || board[i]) return;
+      board[i] = current;
+      drawBoard();
+      if (checkWin(current)) {
+        statusEl.textContent = `Player ${current} wins!`;
+        gameOver = true;
+      } else if (board.every(x => x)) {
+        statusEl.textContent = "It's a draw!";
+        gameOver = true;
+      } else {
+        current = current === 'X' ? 'O' : 'X';
+        statusEl.textContent = `Player ${current}'s turn`;
+      }
+    }
+
+    function checkWin(p) {
+      return wins.some(pattern =>
+        pattern.every(idx => board[idx] === p)
+      );
+    }
+
+    resetBtn.addEventListener('click', () => {
+      board.fill('');
+      current = 'X';
+      gameOver = false;
+      statusEl.textContent = `Player ${current}'s turn`;
+      drawBoard();
+    });
+
+    // Initialize
+    drawBoard();
+  </script>
+</body>
+</html>
